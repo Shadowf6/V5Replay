@@ -3,17 +3,23 @@
 
 Make sure to include stdio in your header file, under the C++ specific definitions.<br>
 
-<code>#include <stdio.h></code>
+```c
+#include <stdio.h>
+```
 
 Create a .txt file within your robot's SD card.
 Then, add this to your code, around the beginning where you set up your variables.
 
-<code>FILE* fileName = fopen("usd/fileName.txt", "w")</code> 
+```c
+FILE* fileName = fopen("usd/fileName.txt", "w")
+``` 
 <br>(And make sure to change the file name to what you named it)
 
 Make you sure you have a chassis object set up and add this code to the loop of your opcontrol() function.
 
-<code>fprintf(fileName, "%.3f %.3f %.3f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);</code>
+```c
+fprintf(fileName, "%.3f %.3f %.3f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+```
 <br>You can modify the decimal point if you want it to round to less or more digits.
 
 Finally, add this code to your disabled() function.
