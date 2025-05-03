@@ -1,9 +1,12 @@
 import arcade as ar
 import math
 
+# code explanation will be added in the future.
+
 WIDTH = 144
 HEIGHT = 144
 BORDER = 12
+
 VIEWSCALE = 5
 
 DELAY = 25
@@ -21,7 +24,7 @@ replayID = "test"
 WINDOWWIDTH = VIEWSCALE * (WIDTH + BORDER * 2)
 WINDOWHEIGHT = VIEWSCALE * (HEIGHT + BORDER * 2)
 
-path = "Replays/" + replayID + ".txt"
+path = replayID + ".txt"
 poses = []
 
 with open(path, 'r') as f:
@@ -31,7 +34,7 @@ with open(path, 'r') as f:
         poses.append(tuple(map(float, entry.split())))
         entry = f.readline()
 
-duration = DELAY * len(poses) / 1000  # in seconds
+duration = DELAY * len(poses)  # in seconds
 
 
 class Replay(ar.Window):
@@ -49,7 +52,7 @@ class Replay(ar.Window):
         self.sl.append(self.robot)
 
         self.step = 0
-        self.timeElapsed = 0  # divided by 1000 for seconds
+        self.timeElapsed = 0
         self.isPlaying = False
 
     def play(self):
@@ -66,7 +69,7 @@ class Replay(ar.Window):
         if self.step < len(poses):
             x, y, t = poses[self.step]
 
-            # Note that if during auto, pose is ever reset, this will break
+            # Note that if during auto, pose is ever reset to (0, 0, 0), this will break
 
             self.robot.center_x = VIEWSCALE * (initX + x)
             self.robot.center_y = VIEWSCALE * (initY + y)
@@ -76,6 +79,12 @@ class Replay(ar.Window):
             self.timeElapsed += DELAY
         else:
             self.pause()
+
+    def update(self):
+        x, y, t = poses[self.step]
+        self.robot.center_x = VIEWSCALE * (initX + x)
+        self.robot.center_y = VIEWSCALE * (initY + y)
+        self.robot.angle = initD + math.degrees(t)
 
     def goToTime(self, time):
         pass
@@ -97,12 +106,35 @@ class Replay(ar.Window):
                 self.pause()
             else:
                 self.play()
+        elif key == ar.key.LEFT:
+            self.step = math.floor(max(0, self.timeElapsed - 1000) / DELAY)
+            self.timeElapsed = self.step * DELAY
+            self.update()
+        elif key == ar.key.RIGHT:
+            self.step = math.floor(min(duration, self.timeElapsed + 1000) / DELAY)
+            self.timeElapsed = self.step * DELAY
+            self.update()
+        elif key == ar.key.J:
+            self.step = math.floor(max(0, self.timeElapsed - 5000) / DELAY)
+            self.timeElapsed = self.step * DELAY
+            self.update()
+        elif key == ar.key.L:
+            self.step = math.floor(min(duration, self.timeElapsed + 5000) / DELAY)
+            self.timeElapsed = self.step * DELAY
+            self.update()
+        elif key == ar.key.COMMA:
+            self.step -= 1
+            self.timeElapsed -= DELAY
+            self.update()
+        elif key == ar.key.PERIOD:
+            self.step += 1
+            self.timeElapsed += DELAY
+            self.update()
 
     def on_draw(self):
         self.clear()
         self.sl.draw()
 
-        # Field
         ar.draw_lrbt_rectangle_outline(VIEWSCALE * BORDER, WINDOWWIDTH - VIEWSCALE * BORDER,
                                        VIEWSCALE * BORDER, WINDOWHEIGHT - VIEWSCALE * BORDER,
                                        (255, 255, 255), 4)
@@ -125,7 +157,6 @@ class Replay(ar.Window):
                      WINDOWWIDTH / 2 + VIEWSCALE, WINDOWHEIGHT - VIEWSCALE * BORDER,
                      (255, 255, 255), 4)
 
-        # Ladder
         w, h = VIEWSCALE * 12 * math.sqrt(2), VIEWSCALE * 12 * math.sqrt(2)
         a = math.sqrt(2) / 2
         x = WINDOWWIDTH / 2
@@ -139,8 +170,3 @@ if __name__ == "__main__":
     replay = Replay()
     ar.run()
     ar.start_render()
-
-# Features:
-# Playback
-# Speed Customization
-# Real-Time Graph
