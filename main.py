@@ -1,8 +1,6 @@
 import arcade as ar
 import math
 
-# code explanation will be added in the future.
-
 WIDTH = 144
 HEIGHT = 144
 BORDER = 12
@@ -85,18 +83,6 @@ class Replay(ar.Window):
         self.robot.center_x = VIEWSCALE * (initX + x)
         self.robot.center_y = VIEWSCALE * (initY + y)
         self.robot.angle = initD + math.degrees(t)
-
-    def goToTime(self, time):
-        pass
-
-    def goToStep(self, step):
-        pass
-
-    def draw_ring(self, x, y, color):
-        pass
-
-    def draw_goal(self, x, y):
-        pass
 
     def on_key_press(self, key, modifiers):
         if key == ar.key.ESCAPE:
