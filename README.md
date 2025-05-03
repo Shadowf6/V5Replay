@@ -28,7 +28,7 @@ fprintf(replay, "DONE\n");
 fclose(replay);
 ```
 
-And you're done! You can add switches to record or not. Just add if statements. Ideally you want to record position every 50 ms or so, so you can customize that to match the delay of your controller.
+You can add conditions to your code to record or not. Just add if statements. Ideally you want to record position every 50-100 ms or so, so you can customize that to match the delay of your controller. You can do this with a separate thread.
 
 Once you've finished driving, simply upload the txt file from the SD, and install a Python IDE if you haven't yet (PyCharm or VSCode works fine). Go to the terminal and type <code>pip install arcade</code>. (If you don't have pip or python installed, please do so.)
 
