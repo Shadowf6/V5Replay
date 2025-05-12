@@ -1,4 +1,4 @@
-<h2>How to setup the replay system for your robot: </h2>
+<h1>How to setup the replay system for your robot:</h1>
 
 
 Make sure to include stdio in your header file, under the C++ specific definitions.<br>
@@ -11,25 +11,48 @@ Create a .txt file within your robot's SD card.
 Then, add this to your code, around the beginning where you set up your variables.
 
 ```c
-FILE* fileName = fopen("usd/fileName.txt", "w")
+FILE* fileName = fopen("usd/filename.txt", "w")
 ``` 
 <br>(And make sure to change the file name to what you named it)
 
-Make you sure you have a chassis object set up and add this code to the loop of your opcontrol() function.
+Inside your initialization() function, add this code to the Task that prints out your chassis onto the brain screen.
 
 ```c
-fprintf(fileName, "%.3f %.3f %.3f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+Task screen_task([&]() {
+  while (true) {
+    lcd::print(0, "X: %f", chassis.getPose().x);
+    lcd::print(1, "Y: %f", chassis.getPose().y);
+    lcd::print(2, "Theta: %f", chassis.getPose().theta);
+
+    // New code:
+    fprintf(replay, "%.3f %.3f %.3f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+
+    delay(25);
+  }
+});
 ```
-<br>You can modify the decimal point if you want it to round to less or more digits.
 
-Finally, add this code to your disabled() function.
-```c
-fprintf(replay, "DONE\n");
-fclose(replay);
-```
+Once you're done driving with the robot, upload the .txt file from the SD.<br> 
+Install Python itself, an IDE, and pip by using the command <code>python -m ensurepip --upgrade</code> in the terminal. Make a python project, go to its terminal, and type in <code>pip install arcade</code>.
 
-You can add conditions to your code to record or not. Just add if statements. Ideally you want to record position every 50-100 ms or so, so you can customize that to match the delay of your controller. You can do this with a separate thread.
+Configure the file path on <code>main.py</code> and other variables. And you're done!
 
-Once you've finished driving, simply upload the txt file from the SD, and install a Python IDE if you haven't yet (PyCharm or VSCode works fine). Go to the terminal and type <code>pip install arcade</code>. (If you don't have pip or python installed, please do so.)
+<h1>How to use the replay</h1>
 
-Now, just add the file path of the txt file and main.py onto your Python project, and you're done setting it up.
+There are some variables in all uppercase that you can change to suit your situation.
+
+<code>VIEWSCALE</code>: Changes size of your window<br>
+<code>INITX</code>, <code>INITY</code>, <code>INITD</code>: Starting position of your robot<br>
+<code>ROBOTWIDTH</code>, <code>ROBOTLENGTH</code>: Dimensions of your robot<br>
+<code>DELAY</code>: How often you write to the replay file<br>
+<code>REPLAYID</code>: Name of the text file<br>
+
+Keys:
+
+SPACE - Play/Pause<br>
+LEFT - Go back 1 second<br>
+RIGHT - Go forward 1 second<br>
+J - Go back 10 seconds<br>
+L - Go forward 10 seconds<br>
+, - Previous frame<br>
+. - Next frame<br>
