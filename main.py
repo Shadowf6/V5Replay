@@ -6,12 +6,12 @@ HEIGHT = 144
 BORDER = 3
 VIEWSCALE = 5
 
-INITX = 36
-INITY = 72
+INITX = 21
+INITY = 62
 INITD = 90
 
-ROBOTWIDTH = 18
-ROBOTLENGTH = 18
+ROBOTWIDTH = 11
+ROBOTLENGTH = 13
 
 DELAY = 25
 REPLAYID = "test"
@@ -35,11 +35,9 @@ def verticalLine(x, start, length, color=(255, 255, 255), width=0.8):
     arcade.draw_line(VIEWSCALE * (BORDER + x), VIEWSCALE * (BORDER + start),
                      VIEWSCALE * (BORDER + x), VIEWSCALE * (BORDER + start + length), color, VIEWSCALE * width)
 
-
 def horizontalLine(y, start, length, color=(255, 255, 255), width=0.8):
     arcade.draw_line(VIEWSCALE * (BORDER + start), VIEWSCALE * (BORDER + y),
                      VIEWSCALE * (BORDER + start + length), VIEWSCALE * (BORDER + y), color, VIEWSCALE * width)
-
 
 def block(x, y, color, radius=1.625):
     x = VIEWSCALE * (BORDER + x)
@@ -51,13 +49,11 @@ def block(x, y, color, radius=1.625):
 
     arcade.draw_polygon_filled(points, color)
 
-
-def verticalGoal(x, y):
+def dispenser(x, y):
     arcade.draw_circle_outline(VIEWSCALE * (BORDER + x), VIEWSCALE * (BORDER + y),
                                VIEWSCALE * 3, (196, 150, 18), VIEWSCALE)
 
-
-def horizontalGoal(left, right, bottom, top):
+def longGoal(left, right, bottom, top):
     arcade.draw_lrbt_rectangle_filled(VIEWSCALE * (BORDER + left + 1.75), VIEWSCALE * (BORDER + right - 1.75),
                                       VIEWSCALE * (BORDER + bottom - 0.1), VIEWSCALE * (BORDER + top + 0.1),
                                       (206, 127, 38))
@@ -79,13 +75,44 @@ def horizontalGoal(left, right, bottom, top):
     arcade.draw_lrbt_rectangle_filled(VIEWSCALE * (BORDER + right - 3.5), VIEWSCALE * (BORDER + right),
                                       VIEWSCALE * (BORDER + top - 0.3), VIEWSCALE * (BORDER + top),
                                       (193, 191, 192, 100))
+    arcade.draw_line(VIEWSCALE * (BORDER + 65.5), VIEWSCALE * (BORDER + bottom - 0.2),
+                     VIEWSCALE * (BORDER + 65.5), VIEWSCALE * (BORDER + top + 0.2),
+                     (255, 255, 255), 4)
+    arcade.draw_line(VIEWSCALE * (BORDER + 78.5), VIEWSCALE * (BORDER + bottom - 0.2),
+                     VIEWSCALE * (BORDER + 78.5), VIEWSCALE * (BORDER + top + 0.2),
+                     (255, 255, 255), 4)
 
+def middleGoal(left, right, bottom, top, angle):
+    def rotate(l, r, b, t):
+        init = [
+            (VIEWSCALE * (BORDER + l), VIEWSCALE * (BORDER + b)),
+            (VIEWSCALE * (BORDER + r), VIEWSCALE * (BORDER + b)),
+            (VIEWSCALE * (BORDER + r), VIEWSCALE * (BORDER + t)),
+            (VIEWSCALE * (BORDER + l), VIEWSCALE * (BORDER + t))
+        ]
+
+        c = math.cos(math.radians(angle))
+        s = math.sin(math.radians(angle))
+
+        cx = VIEWSCALE * (BORDER + (l + r) / 2)
+        cy = VIEWSCALE * (BORDER + (b + t) / 2)
+
+        points = []
+        for x, y in init:
+            dx, dy = x - cx, y - cy
+            rx = dx * c - dy * s
+            ry = dx * s + dy * c
+            points.append((cx + rx, cy + ry))
+
+        return points
+
+    arcade.draw_polygon_filled(rotate(left, right, bottom, top), (193, 191, 192, 100))
+    arcade.draw_polygon_filled(rotate(left + 3.5, right - 3.5, bottom, top), (193, 191, 192, 100))
 
 def leftParking(top, bottom, left, right, color):
     horizontalLine(top + 3, left + 0.5, right + 3, color, 2)
     horizontalLine(bottom - 3, left + 0.5, right + 3, color, 2)
     verticalLine(right + 3, bottom - 4, top - bottom + 8, color, 2)
-
 
 def rightParking(top, bottom, left, color):
     horizontalLine(top + 3, left - 3, WIDTH - left + 2.5, color, 2)
@@ -127,7 +154,7 @@ class Replay(arcade.Window):
 
             self.robot.center_x = VIEWSCALE * (BORDER + INITX + x)
             self.robot.center_y = VIEWSCALE * (BORDER + INITY + y)
-            self.robot.angle = INITD + math.degrees(t)
+            self.robot.angle = INITD + t
 
             self.step += 1
             self.timeElapsed += DELAY
@@ -179,26 +206,26 @@ class Replay(arcade.Window):
         red = (219, 51, 81)
         blue = (16, 172, 202)
 
-        arcade.draw_lrbt_rectangle_outline(VIEWSCALE * BORDER, windowWidth - VIEWSCALE * BORDER,
-                                           VIEWSCALE * BORDER, windowHeight - VIEWSCALE * BORDER,
+        arcade.draw_lrbt_rectangle_outline(VIEWSCALE * BORDER, VIEWSCALE * (WIDTH + BORDER),
+                                           VIEWSCALE * BORDER, VIEWSCALE * (HEIGHT + BORDER),
                                            (255, 255, 255), VIEWSCALE * 0.8)
 
         verticalLine(71, 0, 144)
         verticalLine(73, 0, 144)
 
-        verticalGoal(4, 21)
-        verticalGoal(4, 123)
-        verticalGoal(140, 21)
-        verticalGoal(140, 123)
+        dispenser(4, 24)
+        dispenser(4, 120)
+        dispenser(140, 24)
+        dispenser(140, 120)
 
         leftParking(73.625, 63.875, 0, 12, red)
         rightParking(73.625, 63.875, 132, blue)
 
         # Dispenser blocks
-        block(4, 21, blue)
-        block(4, 123, blue)
-        block(140, 21, red)
-        block(140, 123, red)
+        block(4, 24, blue)
+        block(4, 120, blue)
+        block(140, 24, red)
+        block(140, 120, red)
 
         # 4 vertical on sides
         block(12, 73.625, blue)
@@ -236,8 +263,15 @@ class Replay(arcade.Window):
 
         self.sprite.draw()
 
-        horizontalGoal(47.5, 96.5, 22.25, 26)
-        horizontalGoal(47.5, 96.5, 118.25, 122)
+        middleGoal(60, 84, 70.125, 73.875, 45)
+        arcade.draw_line(VIEWSCALE * (BORDER + 69.172), VIEWSCALE * (BORDER + 72),
+                         VIEWSCALE * (BORDER + 72), VIEWSCALE * (BORDER + 74.828), (206, 127, 38), 3)
+        arcade.draw_line(VIEWSCALE * (BORDER + 74.828), VIEWSCALE * (BORDER + 72),
+                         VIEWSCALE * (BORDER + 72), VIEWSCALE * (BORDER + 69.172), (206, 127, 38), 3)
+        middleGoal(60, 84, 70.125, 73.875, 315)
+
+        longGoal(47.5, 96.5, 22.25, 26)
+        longGoal(47.5, 96.5, 118.25, 122)
 
 
 replay = Replay()
