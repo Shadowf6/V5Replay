@@ -11,7 +11,7 @@ Create a .txt file within your robot's SD card.
 Then, add this to your code, around the beginning where you set up your variables.
 
 ```c
-FILE* fileName = fopen("usd/filename.txt", "w")
+FILE *replay = fopen("usd/replay.txt", "w")
 ``` 
 <br>(And make sure to change the file name to what you named it)
 
@@ -20,14 +20,14 @@ Inside your initialization() function, add this code to the Task that prints out
 ```c
 Task screen_task([&]() {
   while (true) {
-    lcd::print(0, "X: %f", chassis.getPose().x);
-    lcd::print(1, "Y: %f", chassis.getPose().y);
-    lcd::print(2, "Theta: %f", chassis.getPose().theta);
+    pros::lcd::print(0, "X: %f", chassis.getPose().x);
+    pros::lcd::print(1, "Y: %f", chassis.getPose().y);
+    pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
 
     // New code:
     fprintf(replay, "%.3f %.3f %.3f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
 
-    delay(25);
+    pros::delay(25);
   }
 });
 ```
@@ -52,7 +52,7 @@ Keys:
 SPACE - Play/Pause<br>
 LEFT - Go back 1 second<br>
 RIGHT - Go forward 1 second<br>
-J - Go back 10 seconds<br>
-L - Go forward 10 seconds<br>
 , - Previous frame<br>
 . - Next frame<br>
+Left click - Mouse position/pose
+Right click - Pose given mouse position is facing right click position
