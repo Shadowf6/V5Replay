@@ -54,5 +54,5 @@ LEFT - Go back 1 second<br>
 RIGHT - Go forward 1 second<br>
 , - Previous frame<br>
 . - Next frame<br>
-Left click - Mouse position/pose
+Left click - Mouse position/pose<br>
 Right click - Pose given mouse position is facing right click position
